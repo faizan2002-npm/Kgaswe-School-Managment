@@ -2,20 +2,19 @@ const Joi = require("joi");
 const User = require("../models/User");
 
 const methods = {
-
   //REGISTER USER API
   async registerUser(req, res, next) {
     try {
       // Validation for req.body //
 
       const schema = Joi.object().keys({
-        firstName: Joi.string().max(250).required(),
-        lastName: Joi.string().max(250).required(),
+        username: Joi.string().max(250).required(),
+        type: Joi.string(),
         email: Joi.string().email().required(),
-        phone: Joi.string()
-          .max(10)
-          .pattern(/^[0-9]+$/)
-          .required(),
+        // phone: Joi.string()
+        //   .max(10)
+        //   .pattern(/^[0-9]+$/)
+        //   .required(),
         password: Joi.string().min(6).max(255).required(),
         confirm_password: Joi.string().min(6).max(255).required(),
       });
@@ -27,13 +26,12 @@ const methods = {
       }
 
       const {
-        firstName,
-        lastName,
-        type,
+        username,
         email,
         password,
         confirm_password,
-        phone,
+        type,
+        // phone,
       } = req.body;
 
       //// Check If Password and Confirm Password are same or not ////
@@ -42,18 +40,17 @@ const methods = {
       }
 
       //// Check If user exist with this Email or not ////
-      const result = await User.findOne({ email: email });
+      const result = await User.findOne({ username: username });
       if (result) {
-        res.status(404).send("User already registered with this Email Address");
+        res.status(404).send("User already registered with this username");
       } else {
         // Saving User in DataBase
         const user = await User.create({
-          firstName,
-          lastName,
+          username,
           email,
-          address,
           password,
-          phone,
+          type,
+          // phone,
         });
 
         res.status(200).json({ user: user });
@@ -62,7 +59,6 @@ const methods = {
       next(err);
     }
   },
-
 
   //Login User
   async login(req, res, next) {
@@ -88,14 +84,6 @@ const methods = {
     if (!user) {
       return res.status(400).send("You are not registered, Please Sign up!");
     }
-
-    // check if user exists //
-    const result = await User.findOne({ email: email, status: "active" }).select(
-      "+password"
-    );
-    if (!result) {
-      return res.status(400).send("You haven't verify your email address yet");
-    }
     // Check if password matches
 
     const isMatch = await user.matchPassword(password);
@@ -103,7 +91,7 @@ const methods = {
     if (!isMatch) {
       return res.status(400).send("Password is Invalid");
     }
-    Helpers.sendTokenResponse(user, 200, res)
+    Helpers.sendTokenResponse(user, 200, res);
   },
 
   // USER Logout
@@ -114,7 +102,7 @@ const methods = {
       res.status(200).send("Logged out successfully");
     });
   },
-}
+};
 
 module.exports = methods;
 
@@ -144,4 +132,4 @@ const Helpers = {
       res.send("Something went wrong");
     }
   },
-}
+};

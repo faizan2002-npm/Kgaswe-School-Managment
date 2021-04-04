@@ -4,11 +4,7 @@ const jwt = require("jsonwebtoken");
 
 // USERS SCHEMA
 const UserSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: false,
-  },
-  lastName: {
+  username: {
     type: String,
     required: false,
   },
@@ -34,12 +30,7 @@ const UserSchema = new mongoose.Schema({
 
   type: {
     type: String,
-    enum: [
-      "teacher",
-      "student",
-      "head-master",
-      "principle",
-    ],
+    enum: ["teacher", "student", "head-master", "principle"],
     required: false,
     default: "user",
   },
@@ -74,7 +65,7 @@ const UserSchema = new mongoose.Schema({
       description: String,
     },
   ],
-  
+
   isDeleted: {
     type: Boolean,
     default: false,
@@ -87,7 +78,6 @@ const UserSchema = new mongoose.Schema({
 
   resetPasswordToken: String,
   restPasswordExpires: Date,
-
 });
 
 //Encrypt Password
@@ -98,7 +88,7 @@ UserSchema.pre("save", async function () {
 
 //sign JWT and return
 UserSchema.methods.getSignedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id }, process.env.secretOrPrivateKey, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };

@@ -32,7 +32,6 @@ app.use(
   })
 );
 
-
 app.use("/assets", express.static("assets"));
 app.use(express.static(__dirname + "/views"));
 
@@ -57,10 +56,21 @@ app.use(passport.session());
 
 //routes
 const auth = require("./routes/auth");
-
+const teacher = require("./routes/teacher");
+const classes = require("./routes/class");
 
 //Mount Routers
-app.use("/api/v1/auth", auth);
+app.use("/api/auth", auth);
+app.use("/api/teacher", teacher);
+app.use("/api/class", classes);
+
+// ---- Error Handler ---- //
+app.use((error, req, res, next) => {
+  console.log("Main Error =>", error);
+  const message = error.message;
+  const status = error.status || 500;
+  res.status(status).json({ message: message, error: error });
+});
 
 const PORT = 3000 || process.env.PORT;
 
