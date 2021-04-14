@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 
 // Student Schema
 const StudentSchema = new mongoose.Schema({
+  student_no: {
+    type: String,
+    default: false,
+  },
+
   // ----- BIOLOGICAL DETAILS ----- //
   biological_details: {
     name: {

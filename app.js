@@ -58,11 +58,13 @@ app.use(passport.session());
 const auth = require("./routes/auth");
 const teacher = require("./routes/teacher");
 const classes = require("./routes/class");
+const student = require("./routes/student");
 
 //Mount Routers
 app.use("/api/auth", auth);
 app.use("/api/teacher", teacher);
 app.use("/api/class", classes);
+app.use("/api/student", student);
 
 // ---- Error Handler ---- //
 app.use((error, req, res, next) => {

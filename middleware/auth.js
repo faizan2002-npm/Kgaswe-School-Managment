@@ -5,7 +5,6 @@ const User = require("../models/User");
 
 exports.protect = asyncHandler(async (req, res, next) => {
   let token;
-
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -13,6 +12,8 @@ exports.protect = asyncHandler(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies.token) {
     token = req.cookies.token;
+  } else if (req.headers.token) {
+    token = req.headers.token;
   }
 
   //make sure token exists
@@ -21,10 +22,11 @@ exports.protect = asyncHandler(async (req, res, next) => {
   }
   try {
     //verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.secretOrPrivateKey);
     req.user = await User.findById(decoded.id);
     next();
   } catch (err) {
+    console.log(err);
     return res.status(401).send("Please Login to view that resource");
   }
 });
